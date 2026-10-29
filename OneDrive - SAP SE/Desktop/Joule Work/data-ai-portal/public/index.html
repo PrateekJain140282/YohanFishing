@@ -10,133 +10,207 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
+/* ── Design tokens ──────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--blue:#0070b1;--dark:#003366;--gold:#f0ab00;--green:#107e3e;--orange:#e9730c;--red:#bb0000;--purple:#7b5ea7;--bg:#f0f2f5;--card:#fff;--text:#32363a;--muted:#6a6d73;--border:#d9dadb;--shadow:0 1px 4px rgba(0,0,0,.10)}
-body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
-.hdr{background:linear-gradient(135deg,#001f3f,var(--dark),var(--blue));color:#fff;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:300;box-shadow:0 2px 8px rgba(0,0,0,.3)}
-.logo{width:38px;height:38px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#fff;margin-right:12px;flex-shrink:0}
-.nav{background:#fff;border-bottom:2px solid var(--border);display:flex;padding:0 16px;position:sticky;top:64px;z-index:200;gap:2px;align-items:center}
-.nav-tabs{display:flex;gap:2px;overflow-x:auto;flex:1;min-width:0}
-.nav-search{display:flex;align-items:center;gap:6px;padding:6px 0 6px 12px;flex-shrink:0;border-left:1px solid var(--border);margin-left:8px}
-.nav-search input{padding:6px 10px;border:1px solid var(--border);border-radius:20px;font-size:12px;outline:none;width:210px;background:#f8f9fb}
-.nav-search input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 2px #0070b122}
-.nav-search button{padding:6px 14px;background:var(--blue);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+:root{
+  --blue:#0070b1;--dark:#003366;--gold:#f0ab00;
+  --green:#107e3e;--orange:#e9730c;--red:#bb0000;--purple:#7b5ea7;
+  --bg:#eef1f5;--card:#fff;--text:#32363a;--muted:#6a6d73;
+  --border:#d9dadb;--surface:#f5f7fa;
+  --sh-sm:0 1px 3px rgba(0,0,0,.08);
+  --sh:0 2px 8px rgba(0,0,0,.10);
+  --sh-md:0 4px 16px rgba(0,0,0,.13);
+  --sh-lg:0 8px 32px rgba(0,0,0,.18);
+  --r:8px;--r-sm:4px;--r-lg:12px;
+  --tr:all .18s ease;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.hdr{background:linear-gradient(135deg,#001225 0%,#002244 45%,#004a80 100%);color:#fff;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:68px;position:sticky;top:0;z-index:300;box-shadow:0 2px 16px rgba(0,0,0,.4)}
+.logo{width:42px;height:42px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#fff;margin-right:14px;flex-shrink:0;box-shadow:0 2px 8px rgba(240,171,0,.45)}
+.hdr-title{font-size:17px;font-weight:700;letter-spacing:-.2px}
+.hdr-sub{font-size:11px;opacity:.65;margin-top:1px}
+.hdr-badge{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:600;backdrop-filter:blur(4px)}
+.hdr-dot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 6px currentColor;flex-shrink:0}
+
+/* ── Nav ────────────────────────────────────────────────────── */
+.nav{background:var(--card);border-bottom:1px solid var(--border);display:flex;padding:0 20px;position:sticky;top:68px;z-index:200;align-items:center;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.nav-tabs{display:flex;overflow-x:auto;flex:1;min-width:0}
+.nav-tabs::-webkit-scrollbar{height:0}
+.nav-search{display:flex;align-items:center;gap:6px;padding:8px 0 8px 16px;flex-shrink:0;border-left:1px solid var(--border);margin-left:8px}
+.nav-search input{padding:7px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;outline:none;width:220px;background:var(--surface);transition:var(--tr)}
+.nav-search input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px #0070b118}
+.nav-search button{padding:7px 16px;background:var(--blue);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:var(--tr)}
 .nav-search button:hover{background:var(--dark)}
-.nbtn{padding:12px 14px;border:none;background:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s}
+.nbtn{padding:14px 16px;border:none;background:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;transition:var(--tr)}
 .nbtn.on,.nbtn:hover{color:var(--blue);border-bottom-color:var(--blue)}
-.main{max-width:1500px;margin:0 auto;padding:20px}
-/* KPI */
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
-.kpi{background:var(--card);border-radius:8px;padding:16px;box-shadow:var(--shadow);border-left:4px solid var(--blue);cursor:pointer;transition:transform .15s,box-shadow .15s}
-.kpi:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.14)}
-.kpi.g{border-left-color:var(--green);background:linear-gradient(135deg,#fff,#f0faf4)}.kpi.o{border-left-color:var(--orange);background:linear-gradient(135deg,#fff,#fdf3ec)}.kpi.r{border-left-color:var(--red);background:linear-gradient(135deg,#fff,#fdf0f0)}.kpi.p{border-left-color:var(--purple);background:linear-gradient(135deg,#fff,#f5f0fa)}.kpi.gd{border-left-color:var(--gold);background:linear-gradient(135deg,#fff,#fdfaec)}
-.kl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:4px}
-.kv{font-size:30px;font-weight:800;color:var(--dark);line-height:1}
-.ks{font-size:11px;color:var(--muted);margin-top:3px}
-/* Cards */
-.card{background:var(--card);border-radius:8px;box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden}
-.card-hdr{padding:12px 16px;font-size:13px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-/* Journey Kanban */
-.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.nbtn.on{font-weight:700}
+
+/* ── Main layout ─────────────────────────────────────────────── */
+.main{max-width:1520px;margin:0 auto;padding:24px 20px}
+
+/* ── KPI row ─────────────────────────────────────────────────── */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:var(--card);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--sh);border-top:3px solid var(--blue);cursor:pointer;transition:var(--tr);position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;bottom:-24px;right:-24px;width:90px;height:90px;border-radius:50%;background:var(--blue);opacity:.04;transition:var(--tr)}
+.kpi:hover{transform:translateY(-3px);box-shadow:var(--sh-md)}
+.kpi:hover::after{opacity:.09}
+.kpi.g{border-top-color:var(--green)}.kpi.g::after{background:var(--green)}
+.kpi.o{border-top-color:var(--orange)}.kpi.o::after{background:var(--orange)}
+.kpi.r{border-top-color:var(--red)}.kpi.r::after{background:var(--red)}
+.kpi.p{border-top-color:var(--purple)}.kpi.p::after{background:var(--purple)}
+.kpi.gd{border-top-color:var(--gold)}.kpi.gd::after{background:var(--gold)}
+.kl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.9px;font-weight:700;margin-bottom:6px}
+.kv{font-size:34px;font-weight:800;color:#003366;line-height:1;letter-spacing:-1px}
+.ks{font-size:11px;color:var(--muted);margin-top:5px;font-weight:500}
+
+/* ── Cards ───────────────────────────────────────────────────── */
+.card{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--sh);margin-bottom:18px;overflow:hidden}
+.card-hdr{padding:14px 18px;font-size:13px;font-weight:700;color:#003366;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to right,var(--surface),var(--card))}
+
+/* ── Journey kanban ──────────────────────────────────────────── */
+.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
 @media(max-width:1100px){.kanban{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){.kanban{grid-template-columns:1fr}}
-.kol-head{padding:9px 12px;border-radius:8px 8px 0 0;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px}
-.kol-body{background:#f8f9fb;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;padding:8px;min-height:180px;display:flex;flex-direction:column;gap:6px}
-.svc{background:#fff;border-radius:5px;padding:9px 10px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .15s}
-.svc:hover{box-shadow:0 3px 10px rgba(0,0,0,.15);transform:translateY(-1px)}
-/* Table */
-.ttoolbar{padding:10px 14px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--border)}
-input[type=search],select{padding:6px 10px;border:1px solid var(--border);border-radius:4px;font-size:12px;outline:none;background:#fff}
-input[type=search]{width:180px}
-input[type=search]:focus,select:focus{border-color:var(--blue)}
+.kol-head{padding:10px 14px;border-radius:var(--r) var(--r) 0 0;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;gap:7px;letter-spacing:.3px}
+.kol-body{background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);padding:8px;min-height:180px;display:flex;flex-direction:column;gap:6px}
+.svc{background:var(--card);border-radius:var(--r-sm);padding:10px 12px;border:1px solid var(--border);cursor:pointer;transition:var(--tr)}
+.svc:hover{box-shadow:var(--sh-md);transform:translateY(-2px);border-color:#c0c4c8}
+
+/* ── Table ───────────────────────────────────────────────────── */
+.ttoolbar{padding:12px 16px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--border);background:var(--surface)}
+input[type=search],select{padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:12px;outline:none;background:#fff;transition:var(--tr)}
+input[type=search]{width:200px}
+input[type=search]:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #0070b118}
 table{width:100%;border-collapse:collapse}
-thead tr{background:var(--dark)}
-th{padding:9px 12px;text-align:left;font-size:10px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;white-space:nowrap;user-select:none}
-th:hover{background:var(--blue)}
+thead tr{background:linear-gradient(to bottom,#003d72,#003366)}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.6px;cursor:pointer;white-space:nowrap;user-select:none;border-right:1px solid rgba(255,255,255,.1)}
+th:last-child{border-right:none}
+th:hover{background:rgba(255,255,255,.1)}
 tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+tbody tr:nth-child(even){background:#fafbfc}
 tbody tr:hover{background:#e8f4fc}
-td{padding:9px 12px;font-size:12px;vertical-align:middle}
-.pager{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);border-top:1px solid var(--border)}
-.pbtn{padding:5px 10px;border:1px solid var(--border);border-radius:4px;background:#fff;cursor:pointer;font-size:11px}
-.pbtn:hover{background:#e8f4fc}.pbtn:disabled{opacity:.4;cursor:not-allowed}
-/* Pills */
-.pill{display:inline-block;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap;letter-spacing:.3px}
-/* Action type color strips on table rows */
+td{padding:10px 14px;font-size:12px;vertical-align:middle}
+.pager{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);border-top:1px solid var(--border);background:var(--surface)}
+.pbtn{padding:5px 12px;border:1px solid var(--border);border-radius:var(--r-sm);background:#fff;cursor:pointer;font-size:11px;transition:var(--tr)}
+.pbtn:hover{background:#e8f4fc;border-color:var(--blue)}.pbtn:disabled{opacity:.4;cursor:not-allowed}
 .row-new{border-left:4px solid #0070b1!important}.row-update{border-left:4px solid #107e3e!important}
 .row-merge{border-left:4px solid #e9730c!important}.row-split{border-left:4px solid #7b5ea7!important}
 .row-retire{border-left:4px solid #bb0000!important}.row-active{border-left:4px solid #6a6d73!important}
 .row-transfer{border-left:4px solid #f0ab00!important}
-/* Modal */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center}
+
+/* ── Pills / badges ──────────────────────────────────────────── */
+.pill{display:inline-block;padding:3px 9px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap;letter-spacing:.4px;box-shadow:inset 0 -1px 0 rgba(0,0,0,.15)}
+.manual-badge{font-size:9px;font-weight:700;background:#e8f4fc;color:#0070b1;border:1px solid #0070b155;border-radius:4px;padding:1px 5px;vertical-align:middle;margin-left:4px}
+.sku-link{color:var(--blue);font-weight:700;text-decoration:none;background:#e8f4fc;padding:2px 8px;border-radius:4px;font-size:11px;transition:var(--tr)}
+.sku-link:hover{background:var(--blue);color:#fff}
+
+/* ── Modal ───────────────────────────────────────────────────── */
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes slideup{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,5,30,.55);backdrop-filter:blur(3px);z-index:500;align-items:center;justify-content:center;animation:fadein .18s ease}
 .ov.show{display:flex}
-.modal{background:#fff;border-radius:10px;width:min(680px,94vw);max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.3)}
-.mhdr{padding:16px 20px;background:var(--dark);color:#fff;border-radius:10px 10px 0 0;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.mbody{padding:20px}
-.mfield{margin-bottom:12px}
-.mfield label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;display:block;margin-bottom:3px}
-.mfield .val{font-size:13px;color:var(--text);line-height:1.6;background:#f8f9fb;padding:8px 12px;border-radius:4px}
-/* Charts row */
-.ch-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.modal{background:var(--card);border-radius:var(--r-lg);width:min(700px,95vw);max-height:90vh;overflow-y:auto;box-shadow:var(--sh-lg);animation:slideup .2s ease}
+.mhdr{padding:18px 22px;background:linear-gradient(135deg,#001225,#002e58,#004a80);color:#fff;border-radius:var(--r-lg) var(--r-lg) 0 0;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.mbody{padding:22px}
+.mfield{margin-bottom:14px}
+.mfield label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;display:block;margin-bottom:4px}
+.mfield .val{font-size:13px;color:var(--text);line-height:1.6;background:var(--surface);padding:9px 12px;border-radius:var(--r-sm);border:1px solid var(--border)}
+.mhdr-btn{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:#fff;cursor:pointer;border-radius:20px;padding:5px 13px;font-size:12px;font-weight:700;transition:var(--tr)}
+.mhdr-btn:hover{background:rgba(255,255,255,.3)}
+.mhdr-close{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:#fff;cursor:pointer;border-radius:50%;width:32px;height:32px;font-size:16px;line-height:32px;text-align:center;transition:var(--tr)}
+.mhdr-close:hover{background:rgba(255,255,255,.3)}
+
+/* ── Charts ──────────────────────────────────────────────────── */
+.ch-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
 @media(max-width:800px){.ch-row{grid-template-columns:1fr}}
-.ch-inner{position:relative;height:220px}
-.ch-inner canvas{cursor:pointer}
-.drill-hint{font-size:10px;color:#6a6d73;font-style:italic;font-weight:400;margin-left:8px}
-/* Notice */
-.notice{padding:12px 16px;border-radius:6px;font-size:12px;margin-bottom:16px}
-.notice.blue{background:#e8f4fc;border-left:4px solid var(--blue);color:#004a77}
-.notice.orange{background:#fce8d5;border-left:4px solid var(--orange);color:#7a3500}
-.notice.red{background:#f4d4d4;border-left:4px solid var(--red);color:#7a0000}
-.notice.green{background:#d8f0e4;border-left:4px solid var(--green);color:#054a1e}
-/* Refresh bar */
-.rbar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border-radius:8px;box-shadow:var(--shadow);margin-bottom:18px;flex-wrap:wrap}
-.rbtn{padding:7px 16px;background:var(--blue);color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:700;cursor:pointer}
+.ch-inner{position:relative;height:230px}
+.drill-hint{font-size:10px;color:var(--muted);font-style:italic;margin-left:8px}
+
+/* ── Notices ─────────────────────────────────────────────────── */
+.notice{padding:12px 16px;border-radius:var(--r-sm);font-size:12px;margin-bottom:18px;border-left:4px solid}
+.notice.blue{background:#e8f4fc;border-color:var(--blue);color:#004a77}
+.notice.orange{background:#fce8d5;border-color:var(--orange);color:#7a3500}
+.notice.red{background:#f4d4d4;border-color:var(--red);color:#7a0000}
+.notice.green{background:#d8f0e4;border-color:var(--green);color:#054a1e}
+
+/* ── Refresh bar ─────────────────────────────────────────────── */
+.rbar{display:flex;align-items:center;gap:12px;padding:11px 16px;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:20px;flex-wrap:wrap;border-left:3px solid var(--blue)}
+.rbtn{padding:7px 18px;background:var(--blue);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:var(--tr);box-shadow:0 2px 6px rgba(0,112,177,.3)}
 .rbtn:hover{background:var(--dark)}.rbtn:disabled{opacity:.5;cursor:not-allowed}
-.rsrc{font-size:11px;padding:2px 8px;border-radius:8px;font-weight:700}
-.rsrc.live{background:#d8f0e4;color:var(--green)}
-.rsrc.seed{background:#fce8d5;color:var(--orange)}
-/* Loader */
-.loader{text-align:center;padding:40px;color:var(--muted);font-size:13px}
-/* Rule cards */
-.rule-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
-.rule-card{background:var(--card);border-radius:8px;padding:16px;box-shadow:var(--shadow);border-left:4px solid var(--blue)}
-.rule-card h4{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:6px}
-.rule-body{font-size:12px;color:var(--text);margin-bottom:8px;line-height:1.6}
-.rule-impact{font-size:11px;color:var(--muted);background:#f8f9fb;border-radius:4px;padding:6px 10px;border-left:3px solid var(--gold)}
-/* SKU link */
-.sku-link{color:var(--blue);font-weight:700;text-decoration:none;background:#e8f4fc;padding:2px 6px;border-radius:4px;font-size:11px}
-.sku-link:hover{text-decoration:underline}
-/* Service form */
-.sform-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;align-items:center;justify-content:center}
+.rsrc{font-size:11px;padding:3px 10px;border-radius:10px;font-weight:700}
+.rsrc.live{background:#d8f0e4;color:var(--green)}.rsrc.seed{background:#fce8d5;color:var(--orange)}
+
+/* ── Loading / Error states ──────────────────────────────────── */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.loader{text-align:center;padding:48px;color:var(--muted);font-size:13px;animation:pulse 1.6s infinite}
+.err-state{text-align:center;padding:36px 20px;color:var(--red);font-size:13px;background:#fff8f8;border-radius:var(--r);border:1px solid #f4d4d4;margin:8px 0}
+.err-state .retry{margin-top:12px;padding:6px 16px;background:var(--red);color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:12px;font-weight:700}
+
+/* ── Toast ───────────────────────────────────────────────────── */
+@keyframes t-in{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes t-out{from{opacity:1}to{opacity:0;transform:translateX(110%)}}
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none}
+.toast{min-width:240px;max-width:360px;padding:12px 16px;border-radius:var(--r);font-size:12px;font-weight:600;color:#fff;box-shadow:var(--sh-lg);display:flex;align-items:flex-start;gap:8px;line-height:1.4;animation:t-in .25s ease;pointer-events:auto}
+.toast.leaving{animation:t-out .25s ease forwards}
+.toast.success{background:var(--green)}.toast.error{background:var(--red)}.toast.info{background:var(--blue)}
+.toast-icon{font-size:13px;flex-shrink:0;margin-top:1px}
+
+/* ── Confirm dialog ──────────────────────────────────────────── */
+.confirm-box{background:var(--card);border-radius:var(--r-lg);width:min(420px,92vw);box-shadow:var(--sh-lg);animation:slideup .2s ease}
+.confirm-msg{padding:20px 22px;font-size:13px;color:var(--text);line-height:1.7}
+.confirm-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.sbtn{padding:8px 20px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:var(--tr)}
+.sbtn.primary{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(0,112,177,.28)}.sbtn.primary:hover{background:var(--dark)}
+.sbtn.ghost{background:#fff;color:var(--text);border:1px solid var(--border)}.sbtn.ghost:hover{background:var(--surface)}
+.sbtn.danger{background:var(--red);color:#fff}.sbtn.danger:hover{background:#990000}
+.sbtn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── Service form ────────────────────────────────────────────── */
+.sform-ov{display:none;position:fixed;inset:0;background:rgba(0,5,30,.55);backdrop-filter:blur(3px);z-index:600;align-items:center;justify-content:center;animation:fadein .18s ease}
 .sform-ov.show{display:flex}
-.sform{background:#fff;border-radius:10px;width:min(700px,95vw);max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.35)}
-.sform-hdr{padding:16px 20px;background:var(--dark);color:#fff;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between}
-.sform-body{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sform{background:var(--card);border-radius:var(--r-lg);width:min(720px,96vw);max-height:94vh;overflow-y:auto;box-shadow:var(--sh-lg);animation:slideup .2s ease}
+.sform-hdr{padding:18px 22px;background:linear-gradient(135deg,#001225,#002e58,#004a80);color:#fff;border-radius:var(--r-lg) var(--r-lg) 0 0;display:flex;align-items:center;justify-content:space-between}
+.sform-body{padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .sform-body .full{grid-column:1/-1}
-.sform label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:3px}
-.sform input,.sform select,.sform textarea{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:inherit;outline:none}
-.sform input:focus,.sform select:focus,.sform textarea:focus{border-color:var(--blue)}
-.sform textarea{min-height:70px;resize:vertical}
-.sform-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
-.sbtn{padding:7px 18px;border-radius:5px;font-size:12px;font-weight:700;cursor:pointer;border:none}
-.sbtn.primary{background:var(--blue);color:#fff}.sbtn.primary:hover{background:var(--dark)}
-.sbtn.ghost{background:#f0f0f0;color:var(--text)}.sbtn.ghost:hover{background:#e0e0e0}
-.sbtn.danger{background:var(--red);color:#fff}
-.manual-badge{font-size:9px;font-weight:700;background:#e8f4fc;color:#0070b1;border:1px solid #0070b166;border-radius:4px;padding:1px 5px;vertical-align:middle;margin-left:4px}
-/* DMLT items */
-.dmlt-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.sform label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:4px}
+.sform input,.sform select,.sform textarea{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-family:inherit;outline:none;background:#fff;transition:var(--tr)}
+.sform input:focus,.sform select:focus,.sform textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #0070b118}
+.sform input:disabled{background:var(--surface);color:var(--muted);cursor:not-allowed}
+.sform textarea{min-height:78px;resize:vertical}
+.sform-foot{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--surface);border-radius:0 0 var(--r-lg) var(--r-lg)}
+.sform-err{background:#fff0f0;border:1px solid #f4d4d4;border-radius:var(--r-sm);padding:8px 12px;font-size:11px;color:var(--red);font-weight:600}
+
+/* ── DMLT ────────────────────────────────────────────────────── */
+.dmlt-item{display:flex;gap:12px;padding:10px 6px;border-bottom:1px solid var(--border);cursor:pointer;border-radius:var(--r-sm);transition:background .12s}
 .dmlt-item:last-child{border-bottom:none}
-.dmlt-item:hover .dmlt-name{color:var(--blue)}
-.dmlt-name{font-size:12px;font-weight:600;color:var(--dark);line-height:1.4}
-.dmlt-note{font-size:10px;color:var(--orange);margin-top:2px}
+.dmlt-item:hover{background:var(--surface)}
+.dmlt-name{font-size:12px;font-weight:600;color:#003366;line-height:1.4}
+.dmlt-note{font-size:10px;color:var(--orange);margin-top:3px}
+
+/* ── Rules ───────────────────────────────────────────────────── */
+.rule-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.rule-card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--sh);border-left:4px solid var(--blue);transition:var(--tr)}
+.rule-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px)}
+.rule-card h4{font-size:13px;font-weight:700;color:#003366;margin-bottom:8px}
+.rule-body{font-size:12px;color:var(--text);margin-bottom:10px;line-height:1.6}
+.rule-impact{font-size:11px;color:var(--text);background:var(--surface);border-radius:var(--r-sm);padding:7px 11px;border-left:3px solid var(--gold);line-height:1.5}
+
+/* ── Retire cards ────────────────────────────────────────────── */
+.retire-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:10px;cursor:pointer;overflow:hidden;transition:var(--tr)}
+.retire-card:hover{box-shadow:var(--sh-md);transform:translateX(3px)}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect, useCallback, useRef } = React;
+const { useState, useEffect, useCallback, useRef, createContext, useContext } = React;
 Chart.register(ChartDataLabels);
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+/* ─── Constants ──────────────────────────────────────────────── */
 const CAT = 'https://servicescatalog.cvdp3eof-dbsservic1-p1-public.model-t.cc.commerce.ondemand.com/p/';
 const STATUS_C = {
   'Active':'#107e3e','Active / TBD':'#5a8a00','Coming Dec 2026':'#0070b1',
@@ -159,59 +233,147 @@ const JOURNEY_ICONS = {
 };
 const JOURNEYS = ['New Implementation','System Conversion','Expansion & Tuning','DMLT Cross Services','System Migration / PEX'];
 
-// ─── API helpers ─────────────────────────────────────────────────────────────
+/* ─── Toast system ───────────────────────────────────────────── */
+const ToastCtx = createContext(null);
+function ToastProvider({ children }) {
+  const [toasts, setToasts] = useState([]);
+  const add = useCallback((msg, type) => {
+    const id = Date.now() + Math.random();
+    setToasts(t => [...t, { id, msg, type, leaving: false }]);
+    setTimeout(() => {
+      setToasts(t => t.map(x => x.id === id ? { ...x, leaving: true } : x));
+      setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 280);
+    }, 3800);
+  }, []);
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  return (
+    <ToastCtx.Provider value={{ success: m => add(m,'success'), error: m => add(m,'error'), info: m => add(m,'info') }}>
+      {children}
+      <div className="toast-wrap">
+        {toasts.map(t => (
+          <div key={t.id} className={`toast ${t.type}${t.leaving ? ' leaving' : ''}`}>
+            <span className="toast-icon">{icons[t.type]}</span>
+            <span>{t.msg}</span>
+          </div>
+        ))}
+      </div>
+    </ToastCtx.Provider>
+  );
+}
+const useToast = () => useContext(ToastCtx);
+
+/* ─── Confirm dialog ─────────────────────────────────────────── */
+const ConfirmCtx = createContext(null);
+function ConfirmProvider({ children }) {
+  const [state, setState] = useState(null);
+  const confirm = useCallback(msg => new Promise(resolve => setState({ msg, resolve })), []);
+  const respond = ok => { state && state.resolve(ok); setState(null); };
+  return (
+    <ConfirmCtx.Provider value={confirm}>
+      {children}
+      {state && (
+        <div className="ov show" style={{ zIndex: 700 }} onClick={() => respond(false)}>
+          <div className="confirm-box" onClick={e => e.stopPropagation()}>
+            <div className="mhdr" style={{ borderRadius: '12px 12px 0 0' }}>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>⚠️ Confirm Action</div>
+              <button className="mhdr-close" onClick={() => respond(false)}>✕</button>
+            </div>
+            <div className="confirm-msg">{state.msg}</div>
+            <div className="confirm-foot">
+              <button className="sbtn ghost" onClick={() => respond(false)}>Cancel</button>
+              <button className="sbtn danger" onClick={() => respond(true)}>Confirm</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </ConfirmCtx.Provider>
+  );
+}
+const useConfirm = () => useContext(ConfirmCtx);
+
+/* ─── API helpers ────────────────────────────────────────────── */
 const api = {
-  get:  (path) => fetch(`/api${path}`).then(r => r.json()),
-  post: (path) => fetch(`/api${path}`,{method:'POST'}).then(r => r.json()),
+  get: async path => {
+    const r = await fetch(`/api${path}`);
+    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.error || `HTTP ${r.status}`); }
+    return r.json();
+  },
+  post: async (path, body) => {
+    const opts = { method: 'POST', headers: body ? { 'Content-Type': 'application/json' } : {} };
+    if (body) opts.body = JSON.stringify(body);
+    const r = await fetch(`/api${path}`, opts);
+    const j = await r.json().catch(() => ({}));
+    if (j.ok === undefined) j.ok = r.ok;
+    return j;
+  },
+  put: async (path, body) => {
+    const r = await fetch(`/api${path}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    if (j.ok === undefined) j.ok = r.ok;
+    return j;
+  },
+  del: async path => {
+    const r = await fetch(`/api${path}`, { method: 'DELETE' });
+    const j = await r.json().catch(() => ({}));
+    if (j.ok === undefined) j.ok = r.ok;
+    return j;
+  },
 };
 
-// ─── Pill component ───────────────────────────────────────────────────────────
-function Pill({text, colorMap}) {
+/* ─── Shared primitives ──────────────────────────────────────── */
+function Pill({ text, colorMap }) {
   const c = colorMap[text] || '#6a6d73';
+  return <span className="pill" style={{ background: c, color: '#fff' }}>{text}</span>;
+}
+function Loader() { return <div className="loader">⟳ Loading…</div>; }
+function ErrState({ message, onRetry }) {
   return (
-    <span className="pill" style={{
-      background: c,
-      color: '#fff',
-      boxShadow: `inset 0 -1px 0 rgba(0,0,0,.2)`,
-    }}>{text}</span>
+    <div className="err-state">
+      <div>⚠️ {message || 'Failed to load data.'}</div>
+      {onRetry && <button className="retry" onClick={onRetry}>↺ Retry</button>}
+    </div>
   );
 }
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
-function Modal({svc, onClose, onEdit}) {
+/* ─── Modal ──────────────────────────────────────────────────── */
+function Modal({ svc, onClose, onEdit }) {
   if (!svc) return null;
   return (
-    <div className={`ov ${svc ? 'show' : ''}`} onClick={e => e.target.className.includes('ov') && onClose()}>
+    <div className="ov show" onClick={e => e.target.classList.contains('ov') && onClose()}>
       <div className="modal">
         <div className="mhdr">
           <div>
-            <div style={{fontSize:11,opacity:.75,marginBottom:2}}>
-              #{svc.sku}
-              {svc._manual && <span className="manual-badge" style={{marginLeft:6}}>MANUAL</span>}
+            <div style={{ fontSize: 11, opacity: .68, marginBottom: 3, letterSpacing: .4 }}>
+              SKU #{svc.sku}
+              {svc._manual && <span className="manual-badge" style={{ marginLeft: 8 }}>MANUAL</span>}
             </div>
-            <div style={{fontSize:15,fontWeight:700}}>{svc.name}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.3 }}>{svc.name}</div>
           </div>
-          <div style={{display:'flex',gap:6,alignItems:'center'}}>
-            {onEdit && <button onClick={()=>onEdit(svc)} style={{background:'rgba(255,255,255,.2)',border:'none',color:'#fff',fontSize:12,cursor:'pointer',borderRadius:4,padding:'4px 10px',fontWeight:700}}>✏️ Edit</button>}
-            <button onClick={onClose} style={{background:'rgba(255,255,255,.2)',border:'none',color:'#fff',fontSize:18,cursor:'pointer',borderRadius:4,width:28,height:28}}>✕</button>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+            {onEdit && <button className="mhdr-btn" onClick={() => onEdit(svc)}>✏️ Edit</button>}
+            <button className="mhdr-close" onClick={onClose}>✕</button>
           </div>
         </div>
         <div className="mbody">
-          <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:14}}>
-            <Pill text={svc.status} colorMap={STATUS_C}/>
-            <Pill text={svc.action} colorMap={ACTION_C}/>
-            {svc.sizes&&svc.sizes.length>0 && svc.sizes.map(s=>(
-              <span key={s} className="pill" style={{background:'#f0f0f0',color:'#333',border:'1px solid #ccc'}}>{s}</span>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
+            <Pill text={svc.status} colorMap={STATUS_C} />
+            <Pill text={svc.action} colorMap={ACTION_C} />
+            {svc.sizes && svc.sizes.length > 0 && svc.sizes.map(s => (
+              <span key={s} className="pill" style={{ background: '#eee', color: '#333', border: '1px solid #ccc', boxShadow: 'none' }}>{s}</span>
             ))}
           </div>
-          <div className="mfield"><label>Journey</label><div className="val">{svc.journey}</div></div>
-          <div className="mfield"><label>Scope</label><div className="val">{svc.scope||'—'}</div></div>
-          <div className="mfield"><label>Notes / Planning Status</label><div className="val">{svc.notes||'—'}</div></div>
-          {svc.owner && svc.owner !== 'N/A' && svc.owner !== 'Portfolio Team' &&
-            <div className="mfield"><label>Service Owner</label><div className="val">👤 {svc.owner}</div></div>}
-          <div style={{marginTop:16}}>
+          <div className="mfield">
+            <label>Journey</label>
+            <div className="val">{JOURNEY_ICONS[svc.journey] || ''} {svc.journey}</div>
+          </div>
+          <div className="mfield"><label>Scope</label><div className="val">{svc.scope || '—'}</div></div>
+          <div className="mfield"><label>Notes / Planning Status</label><div className="val">{svc.notes || '—'}</div></div>
+          {svc.owner && svc.owner !== 'N/A' && svc.owner !== 'Portfolio Team' && (
+            <div className="mfield"><label>Service Owner</label><div className="val">👤 {svc.owner}</div></div>
+          )}
+          <div style={{ marginTop: 18 }}>
             <a href={`${CAT}${svc.sku}`} target="_blank" rel="noreferrer"
-               style={{display:'inline-flex',alignItems:'center',gap:6,background:'#0070b1',color:'#fff',padding:'7px 14px',borderRadius:5,fontSize:12,fontWeight:700,textDecoration:'none'}}>
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--blue)', color: '#fff', padding: '8px 18px', borderRadius: 20, fontSize: 12, fontWeight: 700, textDecoration: 'none', boxShadow: '0 2px 6px rgba(0,112,177,.3)' }}>
               🔗 Open in SAP Services Catalog
             </a>
           </div>
@@ -221,203 +383,160 @@ function Modal({svc, onClose, onEdit}) {
   );
 }
 
-// ─── RefreshBar ───────────────────────────────────────────────────────────────
-function RefreshBar({meta, onRefresh, loading}) {
-  const [msg, setMsg] = useState('');
-  const doRefresh = async () => {
-    setMsg('Refreshing from MCP…');
-    const r = await onRefresh();
-    setMsg(r.message || 'Done.');
-    setTimeout(() => setMsg(''), 5000);
-  };
+/* ─── RefreshBar ─────────────────────────────────────────────── */
+function RefreshBar({ meta, onRefresh, loading }) {
+  const toast = useToast();
   if (!meta) return null;
   const isLive = meta.source === 'mcp-live';
+  const doRefresh = async () => {
+    const r = await onRefresh();
+    if (r && (r.success || r.ok)) toast.success(r.message || 'MCP refresh complete.');
+    else toast.error((r && (r.error || r.message)) || 'MCP refresh failed — is MCP_TOKEN set?');
+  };
   return (
     <div className="rbar">
       <button className="rbtn" onClick={doRefresh} disabled={loading}>
         {loading ? '⟳ Refreshing…' : '⟳ Refresh from MCP'}
       </button>
-      <span className={`rsrc ${isLive?'live':'seed'}`}>
-        {isLive ? '● Live (MCP)' : '● Seed data (document)'}
-      </span>
-      <span style={{fontSize:11,color:'#6a6d73'}}>
+      <span className={`rsrc ${isLive ? 'live' : 'seed'}`}>{isLive ? '● Live (MCP)' : '● Seed Data'}</span>
+      <span style={{ fontSize: 11, color: 'var(--muted)' }}>
         Last refreshed: {meta.lastRefresh ? new Date(meta.lastRefresh).toLocaleString() : '—'}
       </span>
-      {msg && <span style={{fontSize:11,color:'#0070b1',fontWeight:600}}>{msg}</span>}
+      {!isLive && (
+        <span style={{ fontSize: 11, color: 'var(--muted)', marginLeft: 'auto', fontStyle: 'italic' }}>
+          Set MCP_TOKEN env var to enable live data
+        </span>
+      )}
     </div>
   );
 }
 
-// ─── Overview Tab ────────────────────────────────────────────────────────────
-function Overview({stats, onDrillDown}) {
+/* ─── Overview ───────────────────────────────────────────────── */
+function Overview({ stats, onDrillDown }) {
   const chartRef1 = useRef(null), chartRef2 = useRef(null);
   const chart1 = useRef(null), chart2 = useRef(null);
+  const drillRef = useRef(onDrillDown);
+  useEffect(() => { drillRef.current = onDrillDown; });
 
   useEffect(() => {
     if (!stats) return;
     const byAction  = stats.byAction  || {};
     const byJourney = stats.byJourney || {};
     const maxAction = Math.max(...Object.values(byAction), 1);
-    const total2    = Object.values(byJourney).reduce((a,b)=>a+b,0);
+    const total2    = Object.values(byJourney).reduce((a, b) => a + b, 0);
 
-    if (chart1.current) chart1.current.destroy();
-    if (chart2.current) chart2.current.destroy();
+    if (chart1.current) { chart1.current.destroy(); chart1.current = null; }
+    if (chart2.current) { chart2.current.destroy(); chart2.current = null; }
 
     chart1.current = new Chart(chartRef1.current, {
-      type:'bar',
-      data:{
-        labels:Object.keys(byAction),
-        datasets:[{
-          data:Object.values(byAction),
-          backgroundColor:Object.keys(byAction).map(a=>ACTION_C[a]||'#6a6d73'),
-          hoverBackgroundColor:Object.keys(byAction).map(a=>(ACTION_C[a]||'#6a6d73')+'bb'),
-          borderRadius:4,
+      type: 'bar',
+      data: {
+        labels: Object.keys(byAction),
+        datasets: [{
+          data: Object.values(byAction),
+          backgroundColor: Object.keys(byAction).map(a => ACTION_C[a] || '#6a6d73'),
+          hoverBackgroundColor: Object.keys(byAction).map(a => (ACTION_C[a] || '#6a6d73') + 'cc'),
+          borderRadius: 6,
         }]
       },
-      options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        layout:{padding:{top:24}},
-        onClick:(evt,elements)=>{
-          if(elements.length>0 && onDrillDown){
-            const action=Object.keys(byAction)[elements[0].index];
-            onDrillDown({action,_ts:Date.now()});
-          }
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        layout: { padding: { top: 28 } },
+        onClick: (evt, els) => {
+          if (els.length > 0) drillRef.current?.({ action: Object.keys(byAction)[els[0].index], _ts: Date.now() });
         },
-        plugins:{
-          legend:{display:false},
-          datalabels:{
-            anchor:'end',
-            align:'end',
-            offset:2,
-            font:{size:12,weight:'bold'},
-            color:'#003366',
-            formatter:v=>v,
-          },
-          tooltip:{
-            callbacks:{
-              label:item=>` ${item.raw} services — click to drill down`,
-            }
-          }
+        plugins: {
+          legend: { display: false },
+          datalabels: { anchor: 'end', align: 'end', offset: 2, font: { size: 13, weight: 'bold' }, color: '#003366', formatter: v => v },
+          tooltip: { callbacks: { label: i => ` ${i.raw} services — click to drill down` } },
         },
-        scales:{
-          x:{grid:{display:false},ticks:{font:{size:11}}},
-          y:{display:false,suggestedMax:maxAction+3}
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+          y: { display: false, suggestedMax: maxAction + 3 },
         }
       }
     });
 
     chart2.current = new Chart(chartRef2.current, {
-      type:'doughnut',
-      data:{
-        labels:Object.keys(byJourney),
-        datasets:[{
-          data:Object.values(byJourney),
-          backgroundColor:Object.keys(byJourney).map(j=>JOURNEY_C[j]||'#6a6d73'),
-          borderWidth:2,
-          borderColor:'#fff',
-          hoverOffset:8,
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(byJourney),
+        datasets: [{
+          data: Object.values(byJourney),
+          backgroundColor: Object.keys(byJourney).map(j => JOURNEY_C[j] || '#6a6d73'),
+          borderWidth: 3, borderColor: '#fff', hoverOffset: 10,
         }]
       },
-      options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        onClick:(evt,elements)=>{
-          if(elements.length>0 && onDrillDown){
-            const journey=Object.keys(byJourney)[elements[0].index];
-            onDrillDown({journey,_ts:Date.now()});
-          }
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        onClick: (evt, els) => {
+          if (els.length > 0) drillRef.current?.({ journey: Object.keys(byJourney)[els[0].index], _ts: Date.now() });
         },
-        plugins:{
-          legend:{
-            position:'right',
-            labels:{
-              font:{size:10},
-              padding:10,
-              generateLabels:(chart)=>{
-                const d=chart.data;
-                return d.labels.map((lbl,i)=>{
-                  const val=d.datasets[0].data[i];
-                  const pct=total2?Math.round(val/total2*100):0;
-                  return {
-                    text:`${lbl}  ${val} (${pct}%)`,
-                    fillStyle:d.datasets[0].backgroundColor[i],
-                    strokeStyle:'#fff',lineWidth:2,index:i,
-                    hidden:!chart.getDataVisibility(i),
-                  };
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              font: { size: 10 }, padding: 10,
+              generateLabels: chart => {
+                const d = chart.data;
+                return d.labels.map((lbl, i) => {
+                  const val = d.datasets[0].data[i];
+                  const pct = total2 ? Math.round(val / total2 * 100) : 0;
+                  return { text: `${lbl}  ${val} (${pct}%)`, fillStyle: d.datasets[0].backgroundColor[i], strokeStyle: '#fff', lineWidth: 2, index: i, hidden: !chart.getDataVisibility(i) };
                 });
               }
             }
           },
-          datalabels:{
-            display:(ctx)=>{
-              const val=ctx.dataset.data[ctx.dataIndex];
-              const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);
-              return tot>0 && val/tot>0.04;
-            },
-            formatter:(value,ctx)=>{
-              const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);
-              const pct=tot?Math.round(value/tot*100):0;
-              return `${value}\n${pct}%`;
-            },
-            color:'#fff',
-            font:{size:10,weight:'bold'},
-            textAlign:'center',
+          datalabels: {
+            display: ctx => { const v = ctx.dataset.data[ctx.dataIndex], t = ctx.dataset.data.reduce((a,b)=>a+b,0); return t > 0 && v/t > 0.04; },
+            formatter: (v, ctx) => { const t = ctx.dataset.data.reduce((a,b)=>a+b,0); return `${v}\n${t?Math.round(v/t*100):0}%`; },
+            color: '#fff', font: { size: 10, weight: 'bold' }, textAlign: 'center',
           },
-          tooltip:{
-            callbacks:{
-              label:(item)=>{
-                const pct=total2?Math.round(item.raw/total2*100):0;
-                return ` ${item.label}: ${item.raw} (${pct}%) — click to drill down`;
-              }
-            }
-          }
+          tooltip: { callbacks: { label: i => { const p = total2 ? Math.round(i.raw/total2*100) : 0; return ` ${i.label}: ${i.raw} (${p}%) — click to drill down`; } } }
         }
       }
     });
-    return ()=>{ chart1.current?.destroy(); chart2.current?.destroy(); };
+    return () => {
+      if (chart1.current) { chart1.current.destroy(); chart1.current = null; }
+      if (chart2.current) { chart2.current.destroy(); chart2.current = null; }
+    };
   }, [stats]);
 
-  if (!stats) return <div className="loader">Loading…</div>;
+  if (!stats) return <Loader />;
   const hint = <span className="drill-hint">↗ Click to filter Catalog</span>;
   return (
     <div>
       <div className="notice orange"><strong>⚠️ To-Be Portfolio:</strong> This portal reflects the <em>future state</em> per internal planning documents. New generic L2 SKUs go live <strong>1 Dec 2026</strong>. All non-generic SKUs retired by <strong>May 2027</strong>.</div>
       <div className="kpi-row">
-        <div className="kpi" title="Click to see all services" onClick={()=>onDrillDown&&onDrillDown({statusContains:'', _ts:Date.now()})}>
-          <div className="kl">Total Services</div><div className="kv">{stats.total}</div>
-          <div className="ks">Across 5 journeys ↗</div>
+        <div className="kpi" onClick={() => onDrillDown && onDrillDown({ statusContains: '', _ts: Date.now() })}>
+          <div className="kl">Total Services</div><div className="kv">{stats.total}</div><div className="ks">Across 5 journeys ↗</div>
         </div>
-        <div className="kpi g" title="Click to filter Active services" onClick={()=>onDrillDown&&onDrillDown({statusContains:'Active', _ts:Date.now()})}>
-          <div className="kl">🟢 Active</div><div className="kv">{stats.active}</div>
-          <div className="ks">Bookable today ↗</div>
+        <div className="kpi g" onClick={() => onDrillDown && onDrillDown({ statusContains: 'Active', _ts: Date.now() })}>
+          <div className="kl">🟢 Active</div><div className="kv">{stats.active}</div><div className="ks">Bookable today ↗</div>
         </div>
-        <div className="kpi o" title="Click to filter Coming services" onClick={()=>onDrillDown&&onDrillDown({statusContains:'Coming', _ts:Date.now()})}>
-          <div className="kl">🔵 Coming Dec 2026</div><div className="kv">{stats.coming}</div>
-          <div className="ks">New SKUs + services ↗</div>
+        <div className="kpi o" onClick={() => onDrillDown && onDrillDown({ statusContains: 'Coming', _ts: Date.now() })}>
+          <div className="kl">🔵 Coming Dec 2026</div><div className="kv">{stats.coming}</div><div className="ks">New SKUs ↗</div>
         </div>
-        <div className="kpi r" title="Click to filter Retiring services" onClick={()=>onDrillDown&&onDrillDown({statusContains:'Retiring', _ts:Date.now()})}>
-          <div className="kl">🔴 Retiring</div><div className="kv">{stats.retiring}</div>
-          <div className="ks">By Jan–May 2027 ↗</div>
+        <div className="kpi r" onClick={() => onDrillDown && onDrillDown({ statusContains: 'Retiring', _ts: Date.now() })}>
+          <div className="kl">🔴 Retiring</div><div className="kv">{stats.retiring}</div><div className="ks">By Jan–May 2027 ↗</div>
         </div>
-        <div className="kpi gd" title="Click to see DMLT Cross Services" onClick={()=>onDrillDown&&onDrillDown({journey:'DMLT Cross Services', _ts:Date.now()})}>
-          <div className="kl">🗂️ DMLT Services</div><div className="kv">{stats.byJourney?.['DMLT Cross Services']||0}</div>
-          <div className="ks">Cross-journey ↗</div>
+        <div className="kpi gd" onClick={() => onDrillDown && onDrillDown({ journey: 'DMLT Cross Services', _ts: Date.now() })}>
+          <div className="kl">🗂️ DMLT Services</div><div className="kv">{(stats.byJourney && stats.byJourney['DMLT Cross Services']) || 0}</div><div className="ks">Cross-journey ↗</div>
         </div>
         <div className="kpi p">
           <div className="kl">Data Source</div>
-          <div className="kv" style={{fontSize:14,paddingTop:6}}>{stats.source==='mcp-live'?'🟢 Live':'🟡 Seed'}</div>
+          <div className="kv" style={{ fontSize: 16, paddingTop: 8 }}>{stats.source === 'mcp-live' ? '🟢 Live' : '🟡 Seed'}</div>
           <div className="ks">{stats.source}</div>
         </div>
       </div>
       <div className="ch-row">
         <div className="card">
           <div className="card-hdr">Services by Action Type {hint}</div>
-          <div style={{padding:'14px'}}><div className="ch-inner"><canvas ref={chartRef1}/></div></div>
+          <div style={{ padding: 16 }}><div className="ch-inner"><canvas ref={chartRef1} /></div></div>
         </div>
         <div className="card">
           <div className="card-hdr">Services by Transformation Journey {hint}</div>
-          <div style={{padding:'14px'}}><div className="ch-inner"><canvas ref={chartRef2}/></div></div>
+          <div style={{ padding: 16 }}><div className="ch-inner"><canvas ref={chartRef2} /></div></div>
         </div>
       </div>
       <div className="notice blue"><strong>Key Rules:</strong> (1) Advisory NOT standalone under PS. (2) SAC Planning → Finance &amp; Spend. (3) Data science stays in Data &amp; AI. (4) Enablement → Success Plans. (5) New generic SKUs replace all existing non-generic by May 2027.</div>
@@ -425,33 +544,36 @@ function Overview({stats, onDrillDown}) {
   );
 }
 
-// ─── Journey Kanban ───────────────────────────────────────────────────────────
-function Journey({onSelect}) {
+/* ─── Journey kanban ─────────────────────────────────────────── */
+function Journey({ onSelect }) {
   const [grouped, setGrouped] = useState(null);
-  useEffect(() => { api.get('/journey').then(r => setGrouped(r.data)); }, []);
-  if (!grouped) return <div className="loader">Loading…</div>;
+  const [err, setErr] = useState('');
+  const load = () => api.get('/journey').then(r => setGrouped(r.data)).catch(e => setErr(e.message));
+  useEffect(() => { load(); }, []);
+  if (err) return <ErrState message={err} onRetry={() => { setErr(''); load(); }} />;
+  if (!grouped) return <Loader />;
   return (
     <div>
-      <div className="notice blue" style={{marginBottom:14}}>Click any service card for full details. Retiring services are shown separately in the Retiring tab.</div>
+      <div className="notice blue" style={{ marginBottom: 16 }}>Click any service card for full details. Retiring services are shown separately in the Retiring tab.</div>
       <div className="kanban">
         {JOURNEYS.map(j => {
-          const svcs = (grouped[j]||[]).filter(s => !s.status.includes('Retiring'));
-          const col  = JOURNEY_C[j]||'#6a6d73';
+          const svcs = (grouped[j] || []).filter(s => !s.status.includes('Retiring'));
+          const col = JOURNEY_C[j] || '#6a6d73';
           return (
             <div key={j}>
-              <div className="kol-head" style={{background:col}}>
+              <div className="kol-head" style={{ background: col }}>
                 {JOURNEY_ICONS[j]} {j}
-                <span style={{marginLeft:'auto',background:'rgba(255,255,255,.25)',padding:'1px 7px',borderRadius:10,fontSize:11}}>{svcs.length}</span>
+                <span style={{ marginLeft: 'auto', background: 'rgba(255,255,255,.25)', padding: '2px 8px', borderRadius: 10, fontSize: 11 }}>{svcs.length}</span>
               </div>
               <div className="kol-body">
-                {svcs.length === 0 && <div style={{color:'#aaa',fontSize:11,padding:6}}>No active services</div>}
+                {svcs.length === 0 && <div style={{ color: '#aaa', fontSize: 11, padding: '10px 6px', textAlign: 'center', fontStyle: 'italic' }}>No active services</div>}
                 {svcs.map(s => (
                   <div key={s.sku} className="svc" onClick={() => onSelect(s)}>
-                    <a href={`${CAT}${s.sku}`} target="_blank" rel="noreferrer" className="sku-link" onClick={e=>e.stopPropagation()}>#{s.sku}</a>
-                    <div style={{fontSize:11,fontWeight:600,color:'#003366',lineHeight:1.4,marginTop:4,marginBottom:5}}>{s.name}</div>
-                    <Pill text={s.status} colorMap={STATUS_C}/>
-                    {' '}<Pill text={s.action} colorMap={ACTION_C}/>
-                    {s.sizes&&s.sizes.length>0 && <div style={{fontSize:10,color:'#6a6d73',marginTop:3}}>{s.sizes.join(' · ')}</div>}
+                    <a href={`${CAT}${s.sku}`} target="_blank" rel="noreferrer" className="sku-link" onClick={e => e.stopPropagation()}>#{s.sku}</a>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#003366', lineHeight: 1.4, marginTop: 5, marginBottom: 6 }}>{s.name}</div>
+                    <Pill text={s.status} colorMap={STATUS_C} />{' '}
+                    <Pill text={s.action} colorMap={ACTION_C} />
+                    {s.sizes && s.sizes.length > 0 && <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 4 }}>{s.sizes.join(' · ')}</div>}
                   </div>
                 ))}
               </div>
@@ -463,125 +585,133 @@ function Journey({onSelect}) {
   );
 }
 
-// ─── Catalog Tab ─────────────────────────────────────────────────────────────
-function Catalog({onSelect, drillFilter, onAdd, onEdit}) {
-  const [rows, setRows]       = useState([]);
-  const [total, setTotal]     = useState(0);
-  const [filters, setFilters] = useState({journeys:[],statuses:[],actions:[]});
-  const [q, setQ]             = useState('');
-  const [journey, setJourney] = useState('');
-  const [status, setStatus]   = useState('');
-  const [action, setAction]   = useState('');
+/* ─── Catalog ────────────────────────────────────────────────── */
+function Catalog({ onSelect, drillFilter, onAdd, onEdit, reloadKey }) {
+  const [rows, setRows]           = useState([]);
+  const [total, setTotal]         = useState(0);
+  const [filters, setFilters]     = useState({ journeys: [], statuses: [], actions: [] });
+  const [q, setQ]                 = useState('');
+  const [journey, setJourney]     = useState('');
+  const [status, setStatus]       = useState('');
+  const [action, setAction]       = useState('');
+  const [fetching, setFetching]   = useState(false);
+  const [err, setErr]             = useState('');
+  const [page, setPage]           = useState(0);
+  const [sortCol, setSortCol]     = useState('sku');
+  const [sortDir, setSortDir]     = useState(1);
+  const PER = 20;
 
-  // Apply drill-down filter from charts / KPI cards / global search
   useEffect(() => {
     if (!drillFilter) return;
     if (drillFilter.q              !== undefined) { setQ(drillFilter.q);                  setJourney(''); setAction(''); setStatus(''); }
     if (drillFilter.action         !== undefined) { setAction(drillFilter.action);         setJourney(''); setQ(''); setStatus(''); }
-    if (drillFilter.journey        !== undefined) { setJourney(drillFilter.journey);       setAction('');  setQ(''); setStatus(''); }
-    if (drillFilter.statusContains !== undefined) { setStatus(drillFilter.statusContains); setAction('');  setQ(''); setJourney(''); }
+    if (drillFilter.journey        !== undefined) { setJourney(drillFilter.journey);       setAction(''); setQ(''); setStatus(''); }
+    if (drillFilter.statusContains !== undefined) { setStatus(drillFilter.statusContains); setAction(''); setQ(''); setJourney(''); }
   }, [drillFilter]);
-  const [page, setPage]       = useState(0);
-  const [sortCol, setSortCol] = useState('sku');
-  const [sortDir, setSortDir] = useState(1);
-  const PER = 20;
 
-  useEffect(() => { api.get('/filters').then(r => setFilters(r)); }, []);
+  useEffect(() => { api.get('/filters').then(r => setFilters(r)).catch(() => {}); }, []);
+
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (q)       params.set('q', q);
-    if (journey) params.set('journey', journey);
-    if (status)  params.set('status', status);
-    if (action)  params.set('action', action);
-    api.get(`/services?${params}`).then(r => { setRows(r.data||[]); setTotal(r.total||0); setPage(0); });
-  }, [q, journey, status, action]);
+    setFetching(true); setErr('');
+    const p = new URLSearchParams();
+    if (q)       p.set('q', q);
+    if (journey) p.set('journey', journey);
+    if (status)  p.set('status', status);
+    if (action)  p.set('action', action);
+    api.get(`/services?${p}`)
+      .then(r => { setRows(r.data || []); setTotal(r.total || 0); setPage(0); })
+      .catch(e => setErr(e.message))
+      .finally(() => setFetching(false));
+  }, [q, journey, status, action, reloadKey]);
 
-  const sorted = [...rows].sort((a,b) => {
-    const av = String(a[sortCol]||''), bv = String(b[sortCol]||'');
-    return sortDir * av.localeCompare(bv);
-  });
-  const pageRows = sorted.slice(page*PER, (page+1)*PER);
-
-  const doSort = col => {
-    if (sortCol === col) setSortDir(d => -d);
-    else { setSortCol(col); setSortDir(1); }
-  };
-  const arrow = col => sortCol===col ? (sortDir===1?' ↑':' ↓') : '';
+  const sorted   = [...rows].sort((a, b) => sortDir * String(a[sortCol] || '').localeCompare(String(b[sortCol] || '')));
+  const pageRows = sorted.slice(page * PER, (page + 1) * PER);
+  const doSort   = col => { if (sortCol === col) setSortDir(d => -d); else { setSortCol(col); setSortDir(1); } };
+  const arrow    = col => sortCol === col ? (sortDir === 1 ? ' ↑' : ' ↓') : '';
+  const clearFilters = () => { setAction(''); setJourney(''); setStatus(''); setQ(''); };
 
   return (
     <div>
       <div className="card">
         <div className="ttoolbar">
-          <input type="search" placeholder="🔍 Search SKU, name, scope…" value={q} onChange={e=>setQ(e.target.value)}/>
-          <select value={journey} onChange={e=>setJourney(e.target.value)}>
+          <input type="search" placeholder="🔍 Search SKU, name, scope…" value={q} onChange={e => setQ(e.target.value)} />
+          <select value={journey} onChange={e => setJourney(e.target.value)}>
             <option value="">All Journeys</option>
-            {filters.journeys?.map(j=><option key={j}>{j}</option>)}
+            {filters.journeys && filters.journeys.map(j => <option key={j}>{j}</option>)}
           </select>
-          <select value={status} onChange={e=>setStatus(e.target.value)}>
+          <select value={status} onChange={e => setStatus(e.target.value)}>
             <option value="">All Statuses</option>
-            {filters.statuses?.map(s=><option key={s}>{s}</option>)}
+            {filters.statuses && filters.statuses.map(s => <option key={s}>{s}</option>)}
           </select>
-          <select value={action} onChange={e=>setAction(e.target.value)}>
+          <select value={action} onChange={e => setAction(e.target.value)}>
             <option value="">All Actions</option>
-            {filters.actions?.map(a=><option key={a}>{a}</option>)}
+            {filters.actions && filters.actions.map(a => <option key={a}>{a}</option>)}
           </select>
-          {(action||journey||status||q) && (
-            <span style={{fontSize:11,background:'#e8f4fc',color:'#0070b1',border:'1px solid #0070b166',borderRadius:4,padding:'3px 8px',display:'flex',alignItems:'center',gap:5}}>
-              🔍 {q ? `Search: "${q}"` : `Filtered: ${action||journey||status}`}
-              <button onClick={()=>{setAction('');setJourney('');setStatus('');setQ('');}} style={{border:'none',background:'none',cursor:'pointer',color:'#bb0000',fontWeight:700,fontSize:13,lineHeight:1}}>✕</button>
+          {(action || journey || status || q) && (
+            <span style={{ fontSize: 11, background: '#e8f4fc', color: 'var(--blue)', border: '1px solid #0070b155', borderRadius: 4, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 5 }}>
+              🔍 {q ? `"${q}"` : (action || journey || status)}
+              <button onClick={clearFilters} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--red)', fontWeight: 700, fontSize: 13, lineHeight: 1 }}>✕</button>
             </span>
           )}
-          <button onClick={onAdd} style={{marginLeft:'auto',padding:'6px 14px',background:'var(--green)',color:'#fff',border:'none',borderRadius:5,fontWeight:700,fontSize:12,cursor:'pointer'}}>
+          <button onClick={onAdd}
+            style={{ marginLeft: 'auto', padding: '7px 16px', background: 'var(--green)', color: '#fff', border: 'none', borderRadius: 20, fontWeight: 700, fontSize: 12, cursor: 'pointer', boxShadow: '0 2px 6px rgba(16,126,62,.3)' }}>
             ➕ Add Service
           </button>
-          <span style={{fontSize:11,color:'#6a6d73'}}>{total} services</span>
+          <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{total} services</span>
         </div>
-        <div style={{overflowX:'auto'}}>
+        {err && <div style={{ padding: '10px 16px' }}><ErrState message={err} /></div>}
+        <div style={{ overflowX: 'auto', opacity: fetching ? 0.5 : 1, transition: 'opacity .2s' }}>
           <table>
-            <thead><tr>
-              {['sku','name','journey','status','action'].map(c=>(
-                <th key={c} onClick={()=>doSort(c)}>{c.charAt(0).toUpperCase()+c.slice(1)}{arrow(c)}</th>
-              ))}
-              <th>Sizes</th>
-              <th>Scope</th>
-              <th style={{width:32}}></th>
-            </tr></thead>
+            <thead>
+              <tr>
+                {['sku','name','journey','status','action'].map(c => (
+                  <th key={c} onClick={() => doSort(c)}>{c.charAt(0).toUpperCase()+c.slice(1)}{arrow(c)}</th>
+                ))}
+                <th>Sizes</th><th>Scope</th><th style={{ width: 44 }}></th>
+              </tr>
+            </thead>
             <tbody>
-              {pageRows.length===0 && <tr><td colSpan={7} style={{textAlign:'center',color:'#6a6d73',padding:28,fontStyle:'italic'}}>No services match your filters.</td></tr>}
-              {pageRows.map(s => {
-                const jc = JOURNEY_C[s.journey]||'#6a6d73';
-                const rowCls = `row-${(s.action||'').toLowerCase()}`;
-                return (
-                  <tr key={s.sku} className={rowCls} onClick={()=>onSelect(s)}>
-                    <td><a href={`${CAT}${s.sku}`} target="_blank" rel="noreferrer" className="sku-link" onClick={e=>e.stopPropagation()}>#{s.sku}</a></td>
-                    <td style={{fontWeight:600,color:'#003366',maxWidth:220,lineHeight:1.4}}>
-                      {s.name}
-                      {s._manual && <span className="manual-badge">MANUAL</span>}
-                    </td>
-                    <td><span className="pill" style={{background:jc+'22',color:jc,border:`1px solid ${jc}66`}}>{s.journey}</span></td>
-                    <td><Pill text={s.status} colorMap={STATUS_C}/></td>
-                    <td><Pill text={s.action} colorMap={ACTION_C}/></td>
-                    <td style={{fontSize:11}}>{s.sizes?.length?s.sizes.join(', '):'—'}</td>
-                    <td style={{maxWidth:260,fontSize:11,color:'#6a6d73',lineHeight:1.4}}>{(s.scope||'').substring(0,110)}{s.scope?.length>110?'…':''}</td>
-                    <td onClick={e=>e.stopPropagation()}>
-                      <button
-                        title="Edit this service"
-                        onClick={e=>{e.stopPropagation(); onEdit&&onEdit(s);}}
-                        style={{background:'none',border:'1px solid var(--border)',borderRadius:4,cursor:'pointer',padding:'2px 6px',fontSize:12,color:'var(--blue)'}}>
-                        ✏️
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+              {fetching && rows.length === 0 && (
+                <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--muted)', padding: 36 }}>⟳ Loading…</td></tr>
+              )}
+              {!fetching && pageRows.length === 0 && (
+                <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--muted)', padding: 36, fontStyle: 'italic' }}>No services match your filters.</td></tr>
+              )}
+              {pageRows.map(s => (
+                <tr key={s.sku} className={`row-${(s.action || '').toLowerCase()}`} onClick={() => onSelect(s)}>
+                  <td><a href={`${CAT}${s.sku}`} target="_blank" rel="noreferrer" className="sku-link" onClick={e => e.stopPropagation()}>#{s.sku}</a></td>
+                  <td style={{ fontWeight: 600, color: '#003366', maxWidth: 230, lineHeight: 1.4 }}>
+                    {s.name}
+                    {s._manual && <span className="manual-badge">MANUAL</span>}
+                  </td>
+                  <td>
+                    <span className="pill" style={{ background: (JOURNEY_C[s.journey]||'#6a6d73')+'22', color: JOURNEY_C[s.journey]||'#6a6d73', border: `1px solid ${JOURNEY_C[s.journey]||'#6a6d73'}55`, boxShadow: 'none' }}>
+                      {s.journey}
+                    </span>
+                  </td>
+                  <td><Pill text={s.status} colorMap={STATUS_C} /></td>
+                  <td><Pill text={s.action} colorMap={ACTION_C} /></td>
+                  <td style={{ fontSize: 11 }}>{s.sizes && s.sizes.length ? s.sizes.join(', ') : '—'}</td>
+                  <td style={{ maxWidth: 260, fontSize: 11, color: 'var(--muted)', lineHeight: 1.4 }}>{(s.scope || '').substring(0, 110)}{s.scope && s.scope.length > 110 ? '…' : ''}</td>
+                  <td onClick={e => e.stopPropagation()}>
+                    <button title="Edit"
+                      onClick={e => { e.stopPropagation(); onEdit && onEdit(s); }}
+                      style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', padding: '3px 7px', fontSize: 12, color: 'var(--blue)', transition: 'all .15s' }}
+                      onMouseOver={e => e.currentTarget.style.background = '#e8f4fc'}
+                      onMouseOut={e => e.currentTarget.style.background = 'none'}>
+                      ✏️
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
         <div className="pager">
-          <span>Showing {Math.min(page*PER+1,total)}–{Math.min((page+1)*PER,total)} of {total}</span>
-          <div style={{display:'flex',gap:6}}>
-            <button className="pbtn" disabled={page===0} onClick={()=>setPage(p=>p-1)}>← Prev</button>
-            <button className="pbtn" disabled={(page+1)*PER>=total} onClick={()=>setPage(p=>p+1)}>Next →</button>
+          <span>Showing {total === 0 ? 0 : Math.min(page*PER+1,rows.length)}–{Math.min((page+1)*PER,rows.length)} of {total}</span>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button className="pbtn" disabled={page === 0} onClick={() => setPage(p => p-1)}>← Prev</button>
+            <button className="pbtn" disabled={(page+1)*PER >= rows.length} onClick={() => setPage(p => p+1)}>Next →</button>
           </div>
         </div>
       </div>
@@ -589,38 +719,40 @@ function Catalog({onSelect, drillFilter, onAdd, onEdit}) {
   );
 }
 
-// ─── DMLT Tab ─────────────────────────────────────────────────────────────────
-function DMLTTab({onSelect}) {
+/* ─── DMLT tab ───────────────────────────────────────────────── */
+function DMLTTab({ onSelect }) {
   const [svcs, setSvcs] = useState([]);
-  useEffect(() => { api.get('/services?journey=DMLT Cross Services').then(r=>setSvcs(r.data||[])); }, []);
+  const [err, setErr] = useState('');
+  useEffect(() => { api.get('/services?journey=DMLT Cross Services').then(r => setSvcs(r.data || [])).catch(e => setErr(e.message)); }, []);
   const groups = [
-    {title:'🔵 Reltio / Master Data & Integration', skus:['50110988','50143481','50109951']},
-    {title:'🟢 Data Quality, Volume & Protection',  skus:['50109586','50109956','50141045','50109962']},
-    {title:'🟣 Transition to S/4HANA & Business Suite', skus:['50131848','50126909']},
-    {title:'🟡 Business Data Transformation',       skus:['50109963','50109953','50109961']},
+    { title: '🔵 Reltio / Master Data & Integration', skus: ['50110988','50143481','50109951'] },
+    { title: '🟢 Data Quality, Volume & Protection',  skus: ['50109586','50109956','50141045','50109962'] },
+    { title: '🟣 Transition to S/4HANA & Business Suite', skus: ['50131848','50126909'] },
+    { title: '🟡 Business Data Transformation',       skus: ['50109963','50109953','50109961'] },
   ];
-  if (!svcs.length) return <div className="loader">Loading…</div>;
+  if (err) return <ErrState message={err} />;
+  if (!svcs.length) return <Loader />;
   return (
     <div>
       <div className="notice orange">DMLT Cross Services apply across all Transformation Journeys. They are not tied to a single L1 offering.</div>
       {groups.map(g => (
-        <div key={g.title} className="card" style={{marginBottom:14}}>
+        <div key={g.title} className="card" style={{ marginBottom: 16 }}>
           <div className="card-hdr">{g.title}</div>
-          <div style={{padding:'4px 14px 10px'}}>
+          <div style={{ padding: '4px 16px 12px' }}>
             {g.skus.map(sku => {
-              const s = svcs.find(x=>x.sku===sku);
+              const s = svcs.find(x => x.sku === sku);
               if (!s) return null;
               return (
-                <div key={sku} className="dmlt-item" onClick={()=>onSelect(s)}>
-                  <div style={{flexShrink:0,paddingTop:2}}>
-                    <a href={`${CAT}${sku}`} target="_blank" rel="noreferrer" className="sku-link" onClick={e=>e.stopPropagation()}>#{sku}</a>
+                <div key={sku} className="dmlt-item" onClick={() => onSelect(s)}>
+                  <div style={{ flexShrink: 0, paddingTop: 2 }}>
+                    <a href={`${CAT}${sku}`} target="_blank" rel="noreferrer" className="sku-link" onClick={e => e.stopPropagation()}>#{sku}</a>
                   </div>
-                  <div style={{flex:1}}>
+                  <div style={{ flex: 1 }}>
                     <div className="dmlt-name">{s.name}</div>
-                    <div style={{fontSize:11,color:'#6a6d73',marginTop:1,lineHeight:1.4}}>{s.scope?.substring(0,130)}{s.scope?.length>130?'…':''}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2, lineHeight: 1.4 }}>{s.scope && s.scope.substring(0,140)}{s.scope && s.scope.length > 140 ? '…' : ''}</div>
                     {s.notes && <div className="dmlt-note">📌 {s.notes.substring(0,100)}{s.notes.length>100?'…':''}</div>}
                   </div>
-                  <Pill text={s.action} colorMap={ACTION_C}/>
+                  <Pill text={s.action} colorMap={ACTION_C} />
                 </div>
               );
             })}
@@ -631,40 +763,44 @@ function DMLTTab({onSelect}) {
   );
 }
 
-// ─── Retiring Tab ─────────────────────────────────────────────────────────────
-function RetiringTab({onSelect}) {
+/* ─── Retiring tab ───────────────────────────────────────────── */
+function RetiringTab({ onSelect }) {
   const [retiring, setRetiring] = useState([]);
-  const [coming,   setComing]   = useState([]);
+  const [coming, setComing]     = useState([]);
+  const [err, setErr] = useState('');
   useEffect(() => {
-    api.get('/services').then(r => {
-      setRetiring((r.data||[]).filter(s=>s.status.includes('Retiring')));
-      setComing((r.data||[]).filter(s=>s.status.includes('Coming')));
-    });
+    api.get('/services?limit=500')
+      .then(r => {
+        setRetiring((r.data || []).filter(s => s.status.includes('Retiring')));
+        setComing((r.data || []).filter(s => s.status.includes('Coming')));
+      })
+      .catch(e => setErr(e.message));
   }, []);
+  if (err) return <ErrState message={err} />;
   return (
     <div>
       <div className="notice red"><strong>🔴 Retirement Schedule:</strong> Non-generic SKUs hidden from new deals <strong>4 Jan 2027</strong> and fully retired by <strong>May 2027 (2705 release)</strong>. Open deals may continue.</div>
       {retiring.map(s => (
-        <div key={s.sku} className="card" style={{marginBottom:10,borderLeft:'4px solid #bb0000',cursor:'pointer'}} onClick={()=>onSelect(s)}>
-          <div style={{padding:'12px 16px',display:'flex',gap:14,alignItems:'flex-start'}}>
-            <div style={{flex:1}}>
-              <a href={`${CAT}${s.sku}`} target="_blank" rel="noreferrer" className="sku-link" onClick={e=>e.stopPropagation()}>#{s.sku}</a>
-              <div style={{fontWeight:700,color:'#003366',fontSize:13,marginTop:3}}>{s.name}</div>
-              <div style={{fontSize:11,color:'#6a6d73',marginTop:3}}>{s.notes}</div>
+        <div key={s.sku} className="retire-card" style={{ borderLeft: '4px solid #bb0000' }} onClick={() => onSelect(s)}>
+          <div style={{ padding: '13px 18px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+            <div style={{ flex: 1 }}>
+              <a href={`${CAT}${s.sku}`} target="_blank" rel="noreferrer" className="sku-link" onClick={e => e.stopPropagation()}>#{s.sku}</a>
+              <div style={{ fontWeight: 700, color: '#003366', fontSize: 13, marginTop: 4 }}>{s.name}</div>
+              <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 3, lineHeight: 1.5 }}>{s.notes}</div>
             </div>
-            <Pill text={s.status} colorMap={STATUS_C}/>
+            <Pill text={s.status} colorMap={STATUS_C} />
           </div>
         </div>
       ))}
-      <div style={{fontWeight:700,color:'#003366',fontSize:14,margin:'20px 0 10px',paddingBottom:6,borderBottom:'2px solid #0070b1'}}>Coming Soon</div>
+      <div style={{ fontWeight: 700, color: '#003366', fontSize: 14, margin: '22px 0 12px', paddingBottom: 8, borderBottom: '2px solid var(--blue)' }}>Coming Soon</div>
       <div className="notice blue"><strong>New generic L2 SKUs</strong> go live 1 Dec 2026, replacing current non-generic SKUs.</div>
       {coming.map(s => (
-        <div key={s.sku} className="card" style={{marginBottom:10,borderLeft:`4px solid ${STATUS_C[s.status]||'#0070b1'}`,cursor:'pointer'}} onClick={()=>onSelect(s)}>
-          <div style={{padding:'12px 16px'}}>
-            <a href={`${CAT}${s.sku}`} target="_blank" rel="noreferrer" className="sku-link" onClick={e=>e.stopPropagation()}>#{s.sku}</a>
-            <div style={{fontWeight:700,color:'#003366',fontSize:13,marginTop:3}}>{s.name}</div>
-            <div style={{fontSize:11,color:'#6a6d73',marginTop:3}}>{s.scope}</div>
-            <Pill text={s.status} colorMap={STATUS_C}/>
+        <div key={s.sku} className="retire-card" style={{ borderLeft: `4px solid ${STATUS_C[s.status] || '#0070b1'}` }} onClick={() => onSelect(s)}>
+          <div style={{ padding: '13px 18px' }}>
+            <a href={`${CAT}${s.sku}`} target="_blank" rel="noreferrer" className="sku-link" onClick={e => e.stopPropagation()}>#{s.sku}</a>
+            <div style={{ fontWeight: 700, color: '#003366', fontSize: 13, marginTop: 4 }}>{s.name}</div>
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 3, lineHeight: 1.5, marginBottom: 6 }}>{s.scope}</div>
+            <Pill text={s.status} colorMap={STATUS_C} />
           </div>
         </div>
       ))}
@@ -672,11 +808,13 @@ function RetiringTab({onSelect}) {
   );
 }
 
-// ─── Rules Tab ────────────────────────────────────────────────────────────────
+/* ─── Rules tab ──────────────────────────────────────────────── */
 function RulesTab() {
   const [rules, setRules] = useState([]);
-  useEffect(() => { api.get('/rules').then(r => setRules(r.data||[])); }, []);
-  if (!rules.length) return <div className="loader">Loading…</div>;
+  const [err, setErr] = useState('');
+  useEffect(() => { api.get('/rules').then(r => setRules(r.data || [])).catch(e => setErr(e.message)); }, []);
+  if (err) return <ErrState message={err} />;
+  if (!rules.length) return <Loader />;
   return (
     <div>
       <div className="notice green">These rules apply when scoping, positioning, or selling Data &amp; AI Professional Services. Sourced from internal To-Be portfolio planning documents.</div>
@@ -693,111 +831,112 @@ function RulesTab() {
   );
 }
 
-// ─── ServiceForm modal ────────────────────────────────────────────────────────
-const EMPTY_SVC = { sku:'', name:'', journey:'New Implementation', status:'Active', action:'ACTIVE', sizes:'', owner:'', scope:'', notes:'' };
+/* ─── ServiceForm ────────────────────────────────────────────── */
+const EMPTY_SVC = { sku: '', name: '', journey: 'New Implementation', status: 'Active', action: 'ACTIVE', sizes: '', owner: '', scope: '', notes: '' };
 const JOURNEY_OPTS = ['New Implementation','System Conversion','Expansion & Tuning','DMLT Cross Services','System Migration / PEX','Retiring','Uncategorised'];
 const STATUS_OPTS  = ['Active','Active / TBD','Coming Dec 2026','Coming 2705','Active — Merging','Active — Transferring to Finance','Retiring Jan 2027','Retiring (Obsolete)','Retiring — Moving to Success Plans','Retiring'];
 const ACTION_OPTS  = ['NEW','UPDATE','MERGE','SPLIT','RETIRE','ACTIVE','TRANSFER'];
 
 function ServiceForm({ svc, onClose, onSaved }) {
   const isEdit = !!(svc && svc.sku);
-  const [form, setForm] = React.useState(() => isEdit
+  const [form, setForm] = useState(() => isEdit
     ? { ...svc, sizes: Array.isArray(svc.sizes) ? svc.sizes.join(', ') : (svc.sizes || '') }
     : { ...EMPTY_SVC });
-  const [saving, setSaving] = React.useState(false);
-  const [err,    setErr]    = React.useState('');
+  const [saving, setSaving] = useState(false);
+  const [err, setErr]       = useState('');
+  const toast   = useToast();
+  const confirm = useConfirm();
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const submit = async () => {
     if (!form.sku.trim())  return setErr('SKU is required.');
-    if (!form.name.trim()) return setErr('Name is required.');
+    if (!form.name.trim()) return setErr('Service name is required.');
     setSaving(true); setErr('');
-    const payload = {
-      ...form,
-      sizes: form.sizes.split(',').map(s => s.trim()).filter(Boolean),
-    };
-    const url    = isEdit ? `/api/services/${encodeURIComponent(form.sku)}` : '/api/services';
-    const method = isEdit ? 'PUT' : 'POST';
-    const r = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-    const j = await r.json();
+    const payload = { ...form, sizes: form.sizes.split(',').map(s => s.trim()).filter(Boolean) };
+    const j = isEdit
+      ? await api.put(`/services/${encodeURIComponent(form.sku)}`, payload).catch(e => ({ ok: false, error: e.message }))
+      : await api.post('/services', payload).catch(e => ({ ok: false, error: e.message }));
     setSaving(false);
     if (!j.ok) return setErr(j.error || 'Save failed.');
+    toast.success(isEdit ? `Service #${form.sku} updated.` : `Service #${form.sku} added successfully.`);
     onSaved();
     onClose();
   };
 
   const doDelete = async () => {
-  const msg = svc?._manual
-    ? `Permanently delete #${form.sku}? This cannot be undone.`
-    : `Hide #${form.sku} from the catalog? It stays in services.json on disk but won't appear in the portal. You can restore it by editing manual-services.json.`;
-  if (!window.confirm(msg)) return;
-    const r = await fetch(`/api/services/${encodeURIComponent(form.sku)}`, { method: 'DELETE' });
-    const j = await r.json();
+    const msg = svc && svc._manual
+      ? `Permanently delete service #${form.sku}? This cannot be undone.`
+      : `Hide service #${form.sku} from the catalog? The seed record stays on disk but won't appear in the portal. You can restore it by editing manual-services.json.`;
+    const ok = await confirm(msg);
+    if (!ok) return;
+    const j = await api.del(`/services/${encodeURIComponent(form.sku)}`).catch(e => ({ ok: false, error: e.message }));
     if (!j.ok) return setErr(j.error || 'Delete failed.');
-    onSaved(); onClose();
+    toast.success(`Service #${form.sku} ${svc && svc._manual ? 'deleted' : 'hidden from catalog'}.`);
+    onSaved();
+    onClose();
   };
 
   return (
-    <div className="sform-ov show" onClick={e => e.target.className === 'sform-ov show' && onClose()}>
+    <div className="sform-ov show" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="sform">
         <div className="sform-hdr">
           <div>
-            <div style={{fontSize:11,opacity:.75,marginBottom:2}}>{isEdit ? `Editing #${form.sku}` : 'New Service'}</div>
-            <div style={{fontSize:15,fontWeight:700}}>{isEdit ? 'Edit Service' : 'Add Service Manually'}</div>
+            <div style={{ fontSize: 11, opacity: .68, marginBottom: 3 }}>{isEdit ? `Editing SKU #${form.sku}` : 'New Service Entry'}</div>
+            <div style={{ fontSize: 15, fontWeight: 700 }}>{isEdit ? 'Edit Service' : 'Add Service Manually'}</div>
           </div>
-          <button onClick={onClose} style={{background:'rgba(255,255,255,.2)',border:'none',color:'#fff',fontSize:18,cursor:'pointer',borderRadius:4,width:28,height:28}}>✕</button>
+          <button className="mhdr-close" onClick={onClose}>✕</button>
         </div>
         <div className="sform-body">
           <div>
             <label>SKU *</label>
-            <input value={form.sku} onChange={e=>set('sku',e.target.value)} disabled={isEdit} placeholder="e.g. 50112345"/>
+            <input value={form.sku} onChange={e => set('sku', e.target.value)} disabled={isEdit} placeholder="e.g. 50112345" />
           </div>
           <div>
             <label>Owner</label>
-            <input value={form.owner} onChange={e=>set('owner',e.target.value)} placeholder="Service owner name"/>
+            <input value={form.owner} onChange={e => set('owner', e.target.value)} placeholder="Service owner name" />
           </div>
           <div className="full">
             <label>Name *</label>
-            <input value={form.name} onChange={e=>set('name',e.target.value)} placeholder="Full service name"/>
+            <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="Full service name" />
           </div>
           <div>
             <label>Journey</label>
-            <select value={form.journey} onChange={e=>set('journey',e.target.value)}>
-              {JOURNEY_OPTS.map(j=><option key={j}>{j}</option>)}
+            <select value={form.journey} onChange={e => set('journey', e.target.value)}>
+              {JOURNEY_OPTS.map(j => <option key={j}>{j}</option>)}
             </select>
           </div>
           <div>
             <label>Status</label>
-            <select value={form.status} onChange={e=>set('status',e.target.value)}>
-              {STATUS_OPTS.map(s=><option key={s}>{s}</option>)}
+            <select value={form.status} onChange={e => set('status', e.target.value)}>
+              {STATUS_OPTS.map(s => <option key={s}>{s}</option>)}
             </select>
           </div>
           <div>
             <label>Action</label>
-            <select value={form.action} onChange={e=>set('action',e.target.value)}>
-              {ACTION_OPTS.map(a=><option key={a}>{a}</option>)}
+            <select value={form.action} onChange={e => set('action', e.target.value)}>
+              {ACTION_OPTS.map(a => <option key={a}>{a}</option>)}
             </select>
           </div>
           <div>
-            <label>T-shirt Sizes <span style={{fontWeight:400,textTransform:'none'}}>(comma-separated)</span></label>
-            <input value={form.sizes} onChange={e=>set('sizes',e.target.value)} placeholder="XS, S, M, L, XL"/>
+            <label>T-shirt Sizes <span style={{ fontWeight: 400, textTransform: 'none', fontSize: 9 }}>(comma-separated)</span></label>
+            <input value={form.sizes} onChange={e => set('sizes', e.target.value)} placeholder="XS, S, M, L, XL" />
           </div>
           <div className="full">
             <label>Scope</label>
-            <textarea value={form.scope} onChange={e=>set('scope',e.target.value)} placeholder="Describe what this service covers…"/>
+            <textarea value={form.scope} onChange={e => set('scope', e.target.value)} placeholder="Describe what this service covers…" />
           </div>
           <div className="full">
             <label>Notes / Planning Status</label>
-            <textarea value={form.notes} onChange={e=>set('notes',e.target.value)} placeholder="Planning decisions, dependencies, open items…"/>
+            <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Planning decisions, dependencies, open items…" />
           </div>
-          {err && <div className="full" style={{color:'#bb0000',fontSize:11,fontWeight:600}}>{err}</div>}
+          {err && <div className="sform-err full">⚠️ {err}</div>}
         </div>
         <div className="sform-foot">
           {isEdit && (
-            <button className="sbtn danger" onClick={doDelete} style={{marginRight:'auto'}}
-              title={svc._manual ? 'Permanently remove this service' : 'Hide this service from the catalog (seed data is preserved on disk)'}>
-              🗑 {svc._manual ? 'Delete' : 'Hide'}
+            <button className="sbtn danger" onClick={doDelete} style={{ marginRight: 'auto' }}
+              title={svc && svc._manual ? 'Permanently remove this service' : 'Hide from catalog (seed data preserved)'}>
+              🗑 {svc && svc._manual ? 'Delete' : 'Hide'}
             </button>
           )}
           <button className="sbtn ghost" onClick={onClose}>Cancel</button>
@@ -810,108 +949,125 @@ function ServiceForm({ svc, onClose, onSaved }) {
   );
 }
 
-// ─── Root App ─────────────────────────────────────────────────────────────────
+/* ─── App ────────────────────────────────────────────────────── */
 function App() {
   const [tab,         setTab]         = useState('overview');
   const [selected,    setSelected]    = useState(null);
   const [stats,       setStats]       = useState(null);
+  const [statsErr,    setStatsErr]    = useState('');
   const [loading,     setLoading]     = useState(false);
   const [drillFilter, setDrillFilter] = useState(null);
   const [navQ,        setNavQ]        = useState('');
-  const [formSvc,     setFormSvc]     = useState(null);   // null=closed, {}=new, {...svc}=edit
+  const [formSvc,     setFormSvc]     = useState(null);
+  const [reloadKey,   setReloadKey]   = useState(0);
 
-  const handleDrillDown = useCallback((filter) => {
-    setDrillFilter({...filter, _ts: Date.now()});
+  const loadStats = useCallback(() => {
+    return api.get('/stats')
+      .then(r => { setStats(r.data); setStatsErr(''); })
+      .catch(e => setStatsErr(e.message));
+  }, []);
+
+  useEffect(() => { loadStats(); }, []);
+
+  const handleDrillDown = useCallback(filter => {
+    setDrillFilter({ ...filter, _ts: Date.now() });
     setTab('catalog');
   }, []);
 
-  const doNavSearch = useCallback((val) => {
-    const q = val ?? navQ;
+  const doNavSearch = useCallback(val => {
+    const q = val !== undefined ? val : navQ;
     if (!q.trim()) return;
-    setDrillFilter({q: q.trim(), _ts: Date.now()});
+    setDrillFilter({ q: q.trim(), _ts: Date.now() });
     setTab('catalog');
   }, [navQ]);
 
-  const loadStats = () => api.get('/stats').then(r => setStats(r.data));
-  useEffect(() => { loadStats(); }, []);
-
   const doRefresh = async () => {
     setLoading(true);
-    const r = await api.post('/refresh');
+    const r = await api.post('/refresh').catch(e => ({ ok: false, error: e.message }));
     await loadStats();
     setLoading(false);
     return r;
   };
 
+  const onSaved = useCallback(() => {
+    loadStats();
+    setReloadKey(k => k + 1);
+  }, [loadStats]);
+
   const tabs = [
-    {id:'overview', label:'📊 Overview'},
-    {id:'journey',  label:'🗺️ Journey'},
-    {id:'catalog',  label:`📋 Catalog (${stats?.total||'…'})`},
-    {id:'dmlt',     label:'🗂️ DMLT'},
-    {id:'retiring', label:`🔴 Retiring (${stats?.retiring||'…'})`},
-    {id:'rules',    label:'📜 Rules'},
+    { id: 'overview', label: '📊 Overview' },
+    { id: 'journey',  label: '🗺️ Journey' },
+    { id: 'catalog',  label: `📋 Catalog (${stats ? stats.total : '…'})` },
+    { id: 'dmlt',     label: '🗂️ DMLT' },
+    { id: 'retiring', label: `🔴 Retiring (${stats ? stats.retiring : '…'})` },
+    { id: 'rules',    label: '📜 Rules' },
   ];
 
   return (
     <>
       <header className="hdr">
-        <div style={{display:'flex',alignItems:'center'}}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <div className="logo">SAP</div>
           <div>
-            <div style={{fontSize:16,fontWeight:700}}>Data &amp; AI PS Portfolio</div>
-            <div style={{fontSize:11,opacity:.75}}>To-Be · Professional Services · Oct 2026</div>
+            <div className="hdr-title">Data &amp; AI PS Portfolio</div>
+            <div className="hdr-sub">To-Be · Professional Services · Oct 2026</div>
           </div>
         </div>
-        <div style={{textAlign:'right',fontSize:11,opacity:.9}}>
-          <div style={{display:'flex',alignItems:'center',gap:5,background:'rgba(255,255,255,.15)',borderRadius:12,padding:'3px 10px',fontWeight:600}}>
-            <span style={{width:7,height:7,background:'#4caf50',borderRadius:'50%',display:'inline-block'}}></span>
-            {stats?.source==='mcp-live' ? 'Live MCP' : 'Document Seed'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ textAlign: 'right', fontSize: 11, opacity: .75 }}>
+            {stats ? stats.total : '–'} services total
           </div>
-          <div style={{marginTop:4}}>{stats?.total||'–'} services total</div>
+          <div className="hdr-badge">
+            <span className="hdr-dot" style={{ color: stats && stats.source === 'mcp-live' ? '#4caf50' : '#f0ab00', background: stats && stats.source === 'mcp-live' ? '#4caf50' : '#f0ab00' }}></span>
+            {stats && stats.source === 'mcp-live' ? 'Live MCP' : 'Document Seed'}
+          </div>
         </div>
       </header>
 
       <nav className="nav">
         <div className="nav-tabs">
           {tabs.map(t => (
-            <button key={t.id} className={`nbtn${tab===t.id?' on':''}`} onClick={()=>setTab(t.id)}>{t.label}</button>
+            <button key={t.id} className={`nbtn${tab === t.id ? ' on' : ''}`} onClick={() => setTab(t.id)}>{t.label}</button>
           ))}
         </div>
         <div className="nav-search">
-          <input
-            type="search"
-            placeholder="🔍 Search services…"
-            value={navQ}
+          <input type="search" placeholder="🔍 Search services…" value={navQ}
             onChange={e => setNavQ(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && doNavSearch()}
-          />
+            onKeyDown={e => e.key === 'Enter' && doNavSearch()} />
           <button onClick={() => doNavSearch()}>Search</button>
         </div>
       </nav>
 
       <div className="main">
-        <RefreshBar meta={stats} onRefresh={doRefresh} loading={loading}/>
-        {tab==='overview' && <Overview stats={stats} onDrillDown={handleDrillDown}/>}
-        {tab==='journey'  && <Journey  onSelect={setSelected}/>}
-        {tab==='catalog'  && <Catalog  onSelect={setSelected} drillFilter={drillFilter} onAdd={() => setFormSvc({})} onEdit={svc => setFormSvc(svc)}/>}
-        {tab==='dmlt'     && <DMLTTab  onSelect={setSelected}/>}
-        {tab==='retiring' && <RetiringTab onSelect={setSelected}/>}
-        {tab==='rules'    && <RulesTab/>}
+        {statsErr && <div className="notice red">⚠️ Could not load stats: {statsErr} — <button onClick={loadStats} style={{ background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', color: 'inherit', fontSize: 12 }}>retry</button></div>}
+        <RefreshBar meta={stats} onRefresh={doRefresh} loading={loading} />
+        {tab === 'overview' && <Overview stats={stats} onDrillDown={handleDrillDown} />}
+        {tab === 'journey'  && <Journey  onSelect={setSelected} />}
+        {tab === 'catalog'  && <Catalog  onSelect={setSelected} drillFilter={drillFilter} onAdd={() => setFormSvc({})} onEdit={s => setFormSvc(s)} reloadKey={reloadKey} />}
+        {tab === 'dmlt'     && <DMLTTab  onSelect={setSelected} />}
+        {tab === 'retiring' && <RetiringTab onSelect={setSelected} />}
+        {tab === 'rules'    && <RulesTab />}
       </div>
 
-      <Modal svc={selected} onClose={() => setSelected(null)} onEdit={svc => { setSelected(null); setFormSvc(svc); }}/>
+      <Modal svc={selected} onClose={() => setSelected(null)} onEdit={s => { setSelected(null); setFormSvc(s); }} />
       {formSvc !== null && (
         <ServiceForm
           svc={Object.keys(formSvc).length === 0 ? null : formSvc}
           onClose={() => setFormSvc(null)}
-          onSaved={() => { loadStats(); setDrillFilter(d => d ? {...d, _ts: Date.now()} : {_ts: Date.now()}); }}
+          onSaved={onSaved}
         />
       )}
     </>
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <ToastProvider>
+    <ConfirmProvider>
+      <App />
+    </ConfirmProvider>
+  </ToastProvider>
+);
 </script>
 </body>
 </html>
