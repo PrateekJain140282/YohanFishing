@@ -1,0 +1,47 @@
+---
+# SAP BTP Cloud Foundry deployment
+# Subaccount : NEC  (EA-RISE-Americas)
+# Region     : US East (VA) – AWS  →  us10
+# CF API     : https://api.cf.us10.hana.ondemand.com
+#
+# Before first push:
+#   cf login -a https://api.cf.us10.hana.ondemand.com
+#   cf target -o <your-org> -s <your-space>
+#   cf set-env data-ai-ps-portal GRAPH_TENANT_ID     <azure-tenant-id>
+#   cf set-env data-ai-ps-portal GRAPH_CLIENT_ID     <azure-app-client-id>
+#   cf set-env data-ai-ps-portal GRAPH_CLIENT_SECRET <azure-app-secret>
+#   cf set-env data-ai-ps-portal SP_SITE_ID          <sharepoint-site-id>
+#   cf set-env data-ai-ps-portal SP_LIST_ID          <sharepoint-list-id>
+#   cf set-env data-ai-ps-portal MCP_TOKEN           <mcp-token-optional>
+#   cf push
+#
+applications:
+  - name: data-ai-ps-portal
+    memory: 512M
+    disk_quota: 512M
+    stack: cflinuxfs5
+    buildpacks:
+      - nodejs_buildpack
+    command: node server.js
+    health-check-type: http
+    health-check-http-endpoint: /api/stats
+    timeout: 180
+    env:
+      NODE_ENV: production
+      # ── MCP (optional – enables live data refresh) ──────────────────────────
+      MCP_URL: https://ask-services-rest-api-r2.cfapps.eu10-004.hana.ondemand.com/mcp-server/mcp
+      MCP_TOKEN: ""
+      # ── SharePoint / Graph API backend ──────────────────────────────────────
+      # Leave blank to fall back to local JSON files (dev mode).
+      # Set all five via 'cf set-env' – do NOT commit secrets here.
+      GRAPH_TENANT_ID: ""
+      GRAPH_CLIENT_ID: ""
+      GRAPH_CLIENT_SECRET: ""
+      SP_SITE_ID: ""
+      SP_LIST_ID: ""
+      # ── HANA Cloud backend ───────────────────────────────────────────────────
+      # Credentials come from the bound 'data-ai-ps-hana' service via VCAP_SERVICES.
+      # No manual env vars needed. Local dev only: set HANA_HOST/HANA_USER/HANA_PASSWORD.
+      HANA_PORT: "443"
+services:
+  - data-ai-ps-hana
