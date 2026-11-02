@@ -189,9 +189,14 @@ function ServiceRadarChart({ services }) {
 
   return (
     <div className="card" style={{ marginBottom: 16, padding: '16px 18px' }}>
-      <div className="card-hdr" style={{ marginBottom: 2 }}>⚖️ Service Comparison</div>
+      <div className="card-hdr" style={{ marginBottom: 3, display: 'flex', alignItems: 'center', gap: 6 }}>
+        ⚖️ Service Comparison
+        <span
+          title="Each axis is normalised 0–100 relative to the selected services only — not the full catalog. A score of 100 means that service leads the group on that dimension. Readiness is derived from status: Active = 100, Coming = 60, Retiring = 20."
+          style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', border: '1px solid var(--muted)', borderRadius: '50%', width: 14, height: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'help', flexShrink: 0 }}>i</span>
+      </div>
       <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 12 }}>
-        Normalised 0–100 across selected services
+        Axes normalised 0–100 relative to your selection · higher = better within the group · Readiness derived from status
       </div>
       <div style={{ height: 300, position: 'relative' }}>
         <canvas ref={canvasRef} />
@@ -390,6 +395,13 @@ export function GapAnalysis() {
       <div style={{ marginTop:24 }}>
         <div className="notice orange">
           🔴 <strong>CRM pipeline data not connected.</strong> A full gap analysis could also show revenue potential of uncovered areas if Sales Cloud data were available.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ could also show revenue potential of uncovered areas if Sales Cloud data were available.
         </div>
       </div>
     </div>

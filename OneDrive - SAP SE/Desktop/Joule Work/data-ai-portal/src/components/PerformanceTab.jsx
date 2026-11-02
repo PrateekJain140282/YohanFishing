@@ -617,7 +617,8 @@ function JourneyBarChart({ cfg, stats, journeyNames, JOURNEY_C }) {
 
   return (
     <div className="card" style={{ marginBottom: 18 }}>
-      <div className="card-hdr">Revenue by Journey — Plan vs Forecast vs Actuals</div>
+      <div className="card-hdr" style={{ marginBottom: 3 }}>Revenue by Journey — Plan vs Forecast vs Actuals</div>
+      <div style={{ fontSize: 11, color: 'var(--muted)', padding: '0 2px 10px' }}>Plan = grey · Forecast = blue · Actuals = journey colour. Hover a bar for the exact € value.</div>
       <div style={{ padding: '10px 16px 14px' }}>
         <div style={{ height: 280 }}><canvas ref={chartRef} /></div>
       </div>

@@ -117,8 +117,9 @@ export function PortfolioHealthDoughnut({ stats }) {
 
   return (
     <div className="card" style={{ padding: 18, marginBottom: 18 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: 14 }}>
-        Portfolio Health
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: 3 }}>Portfolio Health</div>
+        <div style={{ fontSize: 11, color: 'var(--muted)' }}>Mix of Active, Upcoming and Retiring services. Badge turns red when &gt;20% of the portfolio is retiring.</div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
         <div style={{ position: 'relative', width: 180, height: 180, flexShrink: 0 }}>
@@ -384,6 +385,10 @@ export function PortfolioScorecard({ stats }) {
 
   return (
     <div style={{ background:'var(--card)', borderRadius:'var(--r)', boxShadow:'var(--sh)', padding:'20px 24px', marginBottom:20 }}>
+      <div style={{ marginBottom: 16 }}>
+        <div className="card-hdr" style={{ marginBottom: 3 }}>📊 Portfolio Score</div>
+        <div style={{ fontSize: 11, color: 'var(--muted)' }}>Composite score across Completeness, Coverage, Financial health, Risk and Readiness. Update KPI targets in Settings → Data.</div>
+      </div>
       <div style={{ display:'flex', alignItems:'center', gap:24, flexWrap:'wrap' }}>
         <div style={{ textAlign:'center', minWidth:100, flexShrink:0 }}>
           <div style={{ fontSize:52, fontWeight:800, color:scoreColor, lineHeight:1 }}>{overall}</div>
@@ -662,6 +667,11 @@ export function Overview({ stats, onDrillDown }) {
             <PortfolioSparkline />
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+ )}
       </div>
     </div>
   );
