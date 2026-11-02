@@ -401,10 +401,3 @@ export function GapAnalysis() {
   );
 }
 
- could also show revenue potential of uncovered areas if Sales Cloud data were available.
-        </div>
-      </div>
-    </div>
-  );
-}
-
