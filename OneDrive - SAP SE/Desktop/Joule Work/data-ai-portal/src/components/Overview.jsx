@@ -671,8 +671,3 @@ export function Overview({ stats, onDrillDown }) {
     </div>
   );
 }
- )}
-      </div>
-    </div>
-  );
-}
